@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/numberTextView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height_100dp"
+        android:layout_gravity="center"
+        android:background="@color/orange"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        tools:text="7"/>
+
+</FrameLayout>

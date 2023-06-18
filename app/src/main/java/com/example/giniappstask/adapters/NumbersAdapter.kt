@@ -4,54 +4,63 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.giniappstask.R
 
 class NumbersAdapter(private val numbers: List<Int>) :
-    ListAdapter<Int, NumberViewHolder>(NumberDiffCallback()) {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NumberViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.item_number, parent, false)
-        return NumberViewHolder(view, numbers)
+    companion object {
+        private const val VIEW_RED = 1
+        private const val VIEW_ORANGE = 2
     }
 
-    override fun onBindViewHolder(holder: NumberViewHolder, position: Int) {
-        val number = getItem(position)
-        holder.bind(number)
+
+    class ViewHolderRed(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val numberTextViewRed: TextView = itemView.findViewById(R.id.numberTextView)
     }
-}
 
-class NumberViewHolder(itemView: View, val numbers: List<Int>) : RecyclerView.ViewHolder(itemView) {
-    private val numberTextView: TextView = itemView.findViewById(R.id.numberTextView)
+    class ViewHolderOrange(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val numberTextViewOrange: TextView = itemView.findViewById(R.id.numberTextView)
+    }
 
-    fun bind(number: Int) {
-        numberTextView.text = number.toString()
-
-        if (numbers.contains(number * -1) && number != 0) {
-
-            val layoutParams = numberTextView.layoutParams
-            layoutParams.height = itemView.context.resources.getDimensionPixelSize(R.dimen.item_height_150dp)
-            numberTextView.setBackgroundColor(itemView.context.resources.getColor(R.color.red))
-            numberTextView.layoutParams = layoutParams
-
-        } else {
-            val layoutParams = numberTextView.layoutParams
-            layoutParams.height = 100
-            numberTextView.setBackgroundColor(itemView.context.resources.getColor(R.color.orange))
-            numberTextView.layoutParams = layoutParams
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_RED -> {
+                val inflater = LayoutInflater.from(parent.context)
+                val view = inflater.inflate(R.layout.item_number_red, parent, false)
+                ViewHolderRed(view)
+            }
+            VIEW_ORANGE -> {
+                val inflater = LayoutInflater.from(parent.context)
+                val view = inflater.inflate(R.layout.item_number_orange, parent, false)
+                ViewHolderOrange(view)
+            }
+            else -> {
+                throw IllegalArgumentException("Invalid view type")
+            }
         }
     }
-}
 
-class NumberDiffCallback : DiffUtil.ItemCallback<Int>() {
-    override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-        return oldItem == newItem
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is ViewHolderRed -> {
+                holder.numberTextViewRed.text = numbers[position].toString()
+            }
+            is ViewHolderOrange -> {
+                holder.numberTextViewOrange.text = numbers[position].toString()
+            }
+        }
     }
 
-    override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-        return oldItem == newItem
+    override fun getItemCount(): Int {
+        return numbers.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        val number = numbers[position]
+
+        return if (numbers.contains(number * -1) && number != 0) VIEW_RED
+        else VIEW_ORANGE
     }
 }
