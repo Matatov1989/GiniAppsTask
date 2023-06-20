@@ -10,8 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.giniappstask.R
 import com.example.giniappstask.adapters.NumbersAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class NumbersFragment : Fragment() {
 
     private lateinit var numbersViewModel: NumbersViewModel
@@ -45,6 +47,6 @@ class NumbersFragment : Fragment() {
             recyclerView.adapter = numberAdapter
         })
 
-        numbersViewModel.fetchNumbers()
+        numbersViewModel.getNumbers()
     }
 }
