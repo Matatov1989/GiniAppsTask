@@ -29,21 +29,4 @@ class NumbersViewModel @Inject constructor(private val repository: NumbersReposi
             }
         }
     }
-
-//    fun fetchNumbers() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                val response = RetrofitClient.numberService.getNumbers()
-//                if (response.isSuccessful) {
-//                    val numberResponse = response.body()
-//                    val sortedNumbers = numberResponse?.numbers?.map { it.number }?.sorted()
-//                    numbersLiveData.postValue(sortedNumbers)
-//                } else {
-//                    Log.e("ERROR", "${response.isSuccessful}")
-//                }
-//            } catch (e: Exception) {
-//                Log.e("ERROR", "${e.message}")
-//            }
-//        }
-//    }
 }

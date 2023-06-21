@@ -7,36 +7,29 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
-import com.example.giniappstask.R
 import com.example.giniappstask.adapters.NumbersAdapter
+import com.example.giniappstask.databinding.FragmentNumbersBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class NumbersFragment : Fragment() {
 
+    private lateinit var binding: FragmentNumbersBinding
     private lateinit var numbersViewModel: NumbersViewModel
     private lateinit var numberAdapter: NumbersAdapter
-
-    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_numbers, container, false)
+        binding = FragmentNumbersBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        initRecyclerView(view)
         setObserve()
-    }
-
-    private fun initRecyclerView(view: View) {
-        recyclerView = view.findViewById(R.id.recyclerViewNumbers)
     }
 
     private fun setObserve() {
@@ -44,7 +37,7 @@ class NumbersFragment : Fragment() {
 
         numbersViewModel.numbersLiveData.observe(viewLifecycleOwner, Observer { numbers ->
             numberAdapter = NumbersAdapter(numbers)
-            recyclerView.adapter = numberAdapter
+            binding.recyclerViewNumbers.adapter = numberAdapter
         })
 
         numbersViewModel.getNumbers()
