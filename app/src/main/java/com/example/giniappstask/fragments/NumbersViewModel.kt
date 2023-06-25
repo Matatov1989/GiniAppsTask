@@ -18,7 +18,7 @@ class NumbersViewModel @Inject constructor(private val repository: NumbersReposi
 
     val numbersLiveData = MutableLiveData<List<Int>>()
 
-    val numbers: Flow<List<Int>> = flow {
+    private val numbers: Flow<List<Int>> = flow {
         val response = repository.getNumbers()
         if (response.isSuccessful)
             emit(response.body()?.numbers?.map { it.number }?.sorted()!!)
