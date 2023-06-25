@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.giniappstask.repository.NumbersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,17 +18,19 @@ class NumbersViewModel @Inject constructor(private val repository: NumbersReposi
 
     val numbersLiveData = MutableLiveData<List<Int>>()
 
+    val numbers: Flow<List<Int>> = flow {
+        val response = repository.getNumbers()
+        if (response.isSuccessful)
+            emit(response.body()?.numbers?.map { it.number }?.sorted()!!)
+        else
+            Log.e("ERROR", "response is ${response.isSuccessful}")
+    }
+
     fun getNumbers() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.getNumbers()
-
-            if (response.isSuccessful) {
-                val numberResponse = response.body()
-                val sortedNumbers = numberResponse?.numbers?.map { it.number }?.sorted()
-                numbersLiveData.postValue(sortedNumbers)
-            } else {
-                Log.e("ERROR", "response is ${response.isSuccessful}")
+            numbers.collect { number ->
+                numbersLiveData.postValue(number)
             }
         }
     }
-}
+ }
