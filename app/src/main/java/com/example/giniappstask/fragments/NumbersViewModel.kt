@@ -1,35 +1,37 @@
 package com.example.giniappstask.fragments
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.giniappstask.data.NumbersUiState
 import com.example.giniappstask.repository.NumbersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class NumbersViewModel @Inject constructor(private val repository: NumbersRepository) :
-    ViewModel() {
+class NumbersViewModel @Inject constructor(private val repository: NumbersRepository) : ViewModel() {
 
-    val numbersLiveData = MutableLiveData<List<Int>>()
+    private val _numbersUiState = MutableStateFlow<NumbersUiState>(NumbersUiState.Loading(true))
+    val numbersUiState: StateFlow<NumbersUiState> get() = _numbersUiState
 
-    private val numbers: Flow<List<Int>> = flow {
-        val response = repository.getNumbers()
-        if (response.isSuccessful)
-            emit(response.body()?.numbers?.map { it.number }?.sorted()!!)
-        else
-            Log.e("ERROR", "response is ${response.isSuccessful}")
-    }
-
-    fun getNumbers() {
-        viewModelScope.launch(Dispatchers.IO) {
-            numbers.collect { number ->
-                numbersLiveData.postValue(number)
+    init {
+        viewModelScope.launch {
+            delay(3000L)
+            try {
+                _numbersUiState.value = NumbersUiState.Loading(true)
+                val result = repository.getNumbers()
+                val list = result.body()?.numbers?.map { it.number }?.sorted()!!
+                _numbersUiState.value = NumbersUiState.Success(list)
+            } catch (e: Exception) {
+                _numbersUiState.value = NumbersUiState.Error(e)
+            }
+            finally {
+                _numbersUiState.value = NumbersUiState.Loading(false)
             }
         }
     }
